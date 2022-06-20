@@ -186,6 +186,7 @@ namespace ReadGen
         {
             try
             {
+                
                 XmlDocument appXml = new XmlDocument();
                 appXml.Load(appConfigPath);
                 XmlNode configs = appXml.SelectSingleNode("configuration");
@@ -209,18 +210,26 @@ namespace ReadGen
                 XmlNode xnNumToSend = findField(configs, "numtosend");    
                 if(xnNumToSend == null)
                 {
-                    return false;
+                    ac.numtosend = 0;
                 }
-                String tmp = xnNumToSend.Value;
-                ac.numtosend = Int32.Parse(tmp);
+                else
+                {
+                    String tmp = xnNumToSend.Value;
+                    ac.numtosend = Int32.Parse(tmp);
+                }
+                
 
                 XmlNode xnMsDelay = findField(configs, "msdelay");
                 if(xnMsDelay == null)
                 {
-                    return false;
+                    ac.msdelay = 0;
                 }
-                tmp = xnMsDelay.Value;
-                ac.msdelay = Int32.Parse(tmp);
+                else
+                {
+                    String tmp = xnMsDelay.Value;
+                    ac.msdelay = Int32.Parse(tmp);
+                }
+                
 
                 XmlNode xnReadFile = findField(configs,"readfile");
                 if(xnReadFile == null)
@@ -232,44 +241,69 @@ namespace ReadGen
                 XmlNode xnCamFile = findField(configs, "camfile");
                 if(xnCamFile == null)
                 {
-                    return false;
+                    ac.camfile = null;
                 }
-                ac.camfile = xnCamFile.Value;
+                else
+                {
+                    ac.camfile = xnCamFile.Value;
+                }
+                
 
                 XmlNode xnAlarmmgtfile = findField(configs, "alarmmgtfile");
                 if(xnAlarmmgtfile == null)
                 {
-                    return false;
+                    ac.alarmmgtfile = null;
                 }
-                ac.alarmmgtfile = xnAlarmmgtfile.Value;
+                else
+                {
+                    ac.alarmmgtfile = xnAlarmmgtfile.Value;
+                }
+                
 
                 XmlNode xnAlarmuserfile = findField(configs, "alarmuserfile");
                 if(xnAlarmuserfile == null)
                 {
-                    return false;
+                    ac.alarmuserfile = null;
                 }
-                ac.alarmuserfile = xnAlarmuserfile.Value;
+                else
+                {
+                    ac.alarmuserfile = xnAlarmuserfile.Value;
+                }
+                
 
                 XmlNode xnOverview_image_path = findField(configs, "overview_image_path");
                 if(xnOverview_image_path == null)
                 {
-                    return false;
+                    ac.overview_image_path = null;
                 }
-                ac.overview_image_path = xnOverview_image_path.Value;
+                else
+                {
+                    ac.overview_image_path = xnOverview_image_path.Value;
+                }
+                
 
                 XmlNode xnPlate_image_path = findField(configs, "plate_image_path");
                 if(xnPlate_image_path == null)
                 {
-                    return false;
+                    ac.plate_image_path = null;
                 }
-                ac.plate_image_path = xnPlate_image_path.Value;
+                else
+                {
+                    ac.plate_image_path = xnPlate_image_path.Value;
+                }
+
+                
 
                 XmlNode xnPlate_lookup = findField(configs, "plate_lookup");
                 if(xnPlate_lookup == null)
                 {
-                    return false;
+                    ac.plate_lookup = null;
                 }
-                ac.plate_lookup = xnPlate_lookup.Value;
+                else
+                {
+                    ac.plate_lookup = xnPlate_lookup.Value;
+                }
+                
 
             }
             catch (Exception e)
