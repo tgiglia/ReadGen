@@ -17,6 +17,8 @@ namespace ReadGen
         public String errorDesc { get; set; }
         public ApplicationConfig ac { get; set; }
         public EnvironmentConfig ec { get; set; }
+        public ReadContainer rc { get; set; }
+        public AlarmMgmtContainer amc { get; set; }
         public ConfigInfo(String acp, String ecp)
         {
             appConfigPath = acp;
@@ -28,6 +30,7 @@ namespace ReadGen
             cameras = new List<String>();
             alarmUsers = new List<String>();
         }
+
         public bool Load()
         {
             if(!parseApplicationConfig())
@@ -37,6 +40,11 @@ namespace ReadGen
             if(!parseEnvironmentConfig())
             {
                 return false;
+            }
+            if(ac.readfile != null)
+            {
+                ReadFileJSONParser rfjp = new ReadFileJSONParser();
+                rc = rfjp.parseReadFile(this);
             }
             if(ac.camfile != null)
             {
@@ -51,6 +59,11 @@ namespace ReadGen
                 {
                     Console.WriteLine("Load: ERROR! could not load camfile: " + ac.alarmuserfile);
                 }
+            }
+            if(ac.alarmmgtfile != null)
+            {
+                AlarmMgmtJSONParser amjp = new AlarmMgmtJSONParser();
+                amc = amjp.parseFile(ac.alarmmgtfile);
             }
             return true;
         }

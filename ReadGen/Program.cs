@@ -25,8 +25,13 @@ namespace ReadGen
             }
             Console.WriteLine("Application Configuration\n" + ci.ac.ToString() + "\n");
             Console.WriteLine("Environment Configuration\n" + ci.ec.ToString());
+            Console.WriteLine("Read File: we have: " + ci.rc.Reads.Count + " reads in the file.");
             Console.WriteLine(ci.cameras.Count + " Entries in the camera file.");
             Console.WriteLine(ci.alarmUsers.Count + " Entries in the alarm users file.");
+
+            Console.WriteLine("Lets try to parse the readfile JSON....");
+            ReadFileJSONParser rfjp = new ReadFileJSONParser();
+            rfjp.testIt(ci);
             Console.WriteLine("Press any key to end.");
             Console.ReadKey();
         }

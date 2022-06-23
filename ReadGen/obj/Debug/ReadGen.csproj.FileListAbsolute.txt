@@ -12,3 +12,6 @@ C:\Users\tgigl\source\repos\ReadGen\ReadGen\ReadGen\obj\Debug\ReadGen.csproj.Ass
 C:\Users\tgigl\source\repos\ReadGen\ReadGen\ReadGen\obj\Debug\ReadGen.csproj.CoreCompileInputs.cache
 C:\Users\tgigl\source\repos\ReadGen\ReadGen\ReadGen\obj\Debug\ReadGen.exe
 C:\Users\tgigl\source\repos\ReadGen\ReadGen\ReadGen\obj\Debug\ReadGen.pdb
+C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\Newtonsoft.Json.dll
+C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\Newtonsoft.Json.xml
+C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.csproj.CopyComplete
