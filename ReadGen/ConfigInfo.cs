@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ReadGen
 {
-    class ConfigInfo
+    public class ConfigInfo
     {
         String appConfigPath;
         String envrionmentConfigPath;
@@ -160,6 +160,13 @@ namespace ReadGen
                     return false;
                 }
                 ec.timezone = xnTimezone.Value;
+
+                XmlNode xnDataSource = findField(configs, "datasource");
+                if(xnDataSource == null)
+                {
+                    return false;
+                }
+                ec.datasource = xnDataSource.Value;
 
                 XmlNode xnGenalarms = findField(configs, "genalarms");
                 if(xnGenalarms == null)

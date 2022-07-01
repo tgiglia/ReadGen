@@ -52,12 +52,19 @@
     <Compile Include="AlarmMgmtStruct.cs" />
     <Compile Include="ApplicationConfig.cs" />
     <Compile Include="ConfigInfo.cs" />
+    <Compile Include="DoNothingProcessor.cs" />
     <Compile Include="EnvironmentConfig.cs" />
+    <Compile Include="LookupProcessor.cs" />
+    <Compile Include="ProcessingReturn.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomProcessor.cs" />
     <Compile Include="ReadContainer.cs" />
     <Compile Include="ReadFileJSONParser.cs" />
+    <Compile Include="ReadGenProcesser.cs" />
     <Compile Include="ReadStruct.cs" />
+    <Compile Include="SequentialProcessor.cs" />
+    <Compile Include="SQLQueryHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

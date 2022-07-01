@@ -23,6 +23,7 @@ namespace ReadGen
                 Console.WriteLine("Error Config Load Failed: " + ci.errorDesc);
                 return;
             }
+
             Console.WriteLine("Application Configuration\n" + ci.ac.ToString() + "\n");
             Console.WriteLine("Environment Configuration\n" + ci.ec.ToString());
             Console.WriteLine("Read File: we have: " + ci.rc.Reads.Count + " reads in the file.");
@@ -32,8 +33,31 @@ namespace ReadGen
             Console.WriteLine("Lets try to parse the readfile JSON....");
             ReadFileJSONParser rfjp = new ReadFileJSONParser();
             rfjp.testIt(ci);
+            ReadGenProcesser rgp = AbstractFactory(ci);
+            //Execute the processing
+            ProcessingReturn pr = rgp.executeProcess(ci);
+            Console.WriteLine("Execution Status: " + pr.status);
+            Console.WriteLine("Execution Description: " + pr.description);
+
             Console.WriteLine("Press any key to end.");
             Console.ReadKey();
+        }
+
+        static ReadGenProcesser AbstractFactory(ConfigInfo ci)
+        {
+            if(ci.ac.proctype.Equals("sequential"))
+            {
+                return new SequentialProcessor();
+            }
+            if (ci.ac.proctype.Equals("random"))
+            {
+                return new RandomProcessor();
+            }
+            if (ci.ac.proctype.Equals("lookup"))
+            {
+                return new LookupProcessor();
+            }
+            return new DoNothingProcessor();
         }
     }
 }

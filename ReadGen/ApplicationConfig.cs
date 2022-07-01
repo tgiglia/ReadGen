@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReadGen
 {
-    class ApplicationConfig
+    public class ApplicationConfig
     {
         public enum procclass { sequential,random,lookup,unknown}
         public String proctype { get; set; }
