@@ -16,5 +16,6 @@ namespace ReadGen
             int idx = rnd.Next(0, ci.cameras.Count);
             return ci.cameras[idx];
         }
+
     }
 }

@@ -68,11 +68,24 @@ namespace ReadGen
                     "Could not find reader for: " + camera);
                 return false;
             }
+            Console.WriteLine("SequentialProcessor::processRead: reader: " + reader);
             //Perform the Image lookup -- should be lib function
+            DeriveImages di = new DeriveImages();
+            ImagesData id = di.getImages(ci, rs);
+            if(id.plateBytes == null || id.overviewBytes == null)
+            {
+                Console.WriteLine("SequentialProcessor::processRead: Image Read FAILED!");
+                return false;
+            }
             //Do we have to generate alarms? Check genalarms in Environment file
             //if genalarms 
-            //Check EOC_TRAN for list entries
-            // generate alarms if there are list entries
+            if(ci.ec.genalarms.Equals("true"))
+            {
+                Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
+                //Check EOC_TRAN for list entries
+                // generate alarms if there are list entries
+            }
+
             //Create the XML
             //Send the REST request
 

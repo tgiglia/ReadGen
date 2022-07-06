@@ -52,8 +52,10 @@
     <Compile Include="AlarmMgmtStruct.cs" />
     <Compile Include="ApplicationConfig.cs" />
     <Compile Include="ConfigInfo.cs" />
+    <Compile Include="DeriveImages.cs" />
     <Compile Include="DoNothingProcessor.cs" />
     <Compile Include="EnvironmentConfig.cs" />
+    <Compile Include="ImagesData.cs" />
     <Compile Include="LookupProcessor.cs" />
     <Compile Include="ProcessingReturn.cs" />
     <Compile Include="Program.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="ReadContainer.cs" />
     <Compile Include="ReadFileJSONParser.cs" />
     <Compile Include="ReadGenProcesser.cs" />
+    <Compile Include="ReadInImageFile.cs" />
     <Compile Include="ReadStruct.cs" />
     <Compile Include="SequentialProcessor.cs" />
     <Compile Include="SQLQueryHelper.cs" />
