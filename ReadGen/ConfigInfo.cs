@@ -14,6 +14,7 @@ namespace ReadGen
         String envrionmentConfigPath;
         public List<String> cameras;
         public List<String> alarmUsers;
+        public List<PlateLookup> plateLookups;
         public String errorDesc { get; set; }
         public ApplicationConfig ac { get; set; }
         public EnvironmentConfig ec { get; set; }
@@ -29,6 +30,8 @@ namespace ReadGen
             errorDesc = "No Failure";
             cameras = new List<String>();
             alarmUsers = new List<String>();
+            plateLookups = new List<PlateLookup>();
+
         }
 
         public bool Load()
@@ -64,6 +67,50 @@ namespace ReadGen
             {
                 AlarmMgmtJSONParser amjp = new AlarmMgmtJSONParser();
                 amc = amjp.parseFile(ac.alarmmgtfile);
+            }
+            if(ac.plate_lookup != null)
+            {
+                if(!loadPlateLookupFile(ac.plate_lookup))
+                {
+                    Console.WriteLine("Load: ERROR could not load plate lookup file.");
+                }
+            }
+            return true;
+        }
+        private bool loadPlateLookupFile(string filePath)
+        {
+            try
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    Boolean beenThrough = false;
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        var values = line.Split(',');
+                        if (values.Length < 5)
+                        {
+                            Console.WriteLine("ConfigInfo::loadPlateLookupFile: ERROR. Not enough elements: " + values.Length + " " + line);
+                            return false;
+                        }
+                        if(beenThrough)
+                        {
+                            PlateLookup pl = new PlateLookup();
+                            pl.plate = values[0];
+                            pl.origx = values[1];
+                            pl.origy = values[2];
+                            pl.width = values[3];
+                            pl.height = values[4];
+                            plateLookups.Add(pl);
+                        }
+                        beenThrough = true;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
             }
             return true;
         }

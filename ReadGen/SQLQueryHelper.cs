@@ -10,7 +10,7 @@ namespace ReadGen
 {
     class SQLQueryHelper
     {
-        protected int numDomains;
+        
         protected ConfigInfo cd;
         protected SqlConnection conn;
         protected SqlDataReader reader;
@@ -45,9 +45,9 @@ namespace ReadGen
                 Console.WriteLine(e.ToString());
             }
         }
-        public string getReaderFromCameraName(string cameraName)
+        public CGInfo getReaderFromCameraName(string cameraName)
         {
-            string readerName = null;
+            
             if(!openSqlConnection())
             {
                 Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: " +
@@ -55,19 +55,21 @@ namespace ReadGen
                 return null;
             }
             //Get the parent ID from the CameraName
-            string parentId = getParentID(cameraName);
-            if(parentId == null)
+            CGInfo cgi = getParentID(cameraName);
+            if(cgi == null)
             {
                 return null;
             }
 
             //Get the reader from the parent ID of the Camera Name.
-            readerName = getReaderFromParentId(parentId);
+            cgi.reader = getReaderFromParentId(cgi.readerId);
+            
             closeSqlConnection();
-            return readerName;
+            return cgi;
         }
         private string getReaderFromParentId(string parentId)
         {
+            
             //select description from sites where site_id = '7EF7AE03-B003-4919-8B50-F9B006538059';
             String sql = "select description from sites where site_id = '" + parentId + "'";
             string readerName = null;
@@ -76,23 +78,39 @@ namespace ReadGen
             while(reader.Read())
             {
                 readerName = reader.GetString(0);
+
             }
             reader.Close();
             return readerName;
         }
-        private string getParentID(string cameraName)
+        private CGInfo getParentID(string cameraName)
         {
-            String parentId = null;
-            String sql = "select parent_id from sites where description='" + cameraName + "'";
+            CGInfo cgi = new CGInfo();
+
+            cgi.cameraName = cameraName;
+            String sql = "select parent_id,site_id,domain_id,lat,lon from sites where description='" + cameraName + "'";
             Console.WriteLine(sql);
             SqlCommand command = new SqlCommand(sql, conn);
             reader = command.ExecuteReader();
             while(reader.Read())
-            {
-                parentId = reader.GetGuid(0).ToString();
+            {                
+                cgi.readerId = reader.GetGuid(0).ToString();
+                
+                cgi.cameraId = reader.GetGuid(1).ToString();
+                int domain = reader.GetInt32(2);
+                cgi.domainIdStr = domain.ToString();
+                if(!reader.IsDBNull(3))
+                {
+                    cgi.lat = reader.GetDouble(3);
+                }
+                if(!reader.IsDBNull(4))
+                {
+                    cgi.lon = reader.GetDouble(4);
+                }
+                
             }
             reader.Close();
-            return parentId;
+            return cgi;
         }
     }
 }

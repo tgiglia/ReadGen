@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,14 +62,22 @@ namespace ReadGen
             }
             //Find its Reader in the database. -- should be lib function
             SQLQueryHelper sqh = new SQLQueryHelper(ci);
-            string reader = sqh.getReaderFromCameraName(camera);
-            if(reader == null)
+            CGInfo cgi = sqh.getReaderFromCameraName(camera);
+            if(cgi == null)
             {
                 Console.WriteLine("SequentialProcessor::processRead: ERROR. " +
                     "Could not find reader for: " + camera);
                 return false;
             }
-            Console.WriteLine("SequentialProcessor::processRead: reader: " + reader);
+            if(rs.longitude != 0)
+            {
+                cgi.lon = rs.longitude;
+            }
+            if(rs.latitude != 0)
+            {
+                cgi.lat = rs.latitude;
+            }
+            Console.WriteLine("SequentialProcessor::processRead: reader: " + cgi.reader);
             //Perform the Image lookup -- should be lib function
             DeriveImages di = new DeriveImages();
             ImagesData id = di.getImages(ci, rs);
@@ -86,8 +95,20 @@ namespace ReadGen
                 // generate alarms if there are list entries
             }
 
+
             //Create the XML
+            EOCGuid eocGuid = new EOCGuid();
+            string timeStamp = genTimestamp();
+            eocGuid.createGuidUS(timeStamp, rs.plate, rs.camera_name);
+            Guid readId = eocGuid.readID;
+            cgi.id = readId.ToString();
+            ReadXmlMaker rxm = new ReadXmlMaker();
+            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci);
+            Console.WriteLine("XML:\n" + requestXml);
             //Send the REST request
+            PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);
+            HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
+            Console.WriteLine("SequentialProcessor::processRead: status = " + status.ToString());
 
 
             return true;

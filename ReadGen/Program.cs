@@ -29,10 +29,12 @@ namespace ReadGen
             Console.WriteLine("Read File: we have: " + ci.rc.Reads.Count + " reads in the file.");
             Console.WriteLine(ci.cameras.Count + " Entries in the camera file.");
             Console.WriteLine(ci.alarmUsers.Count + " Entries in the alarm users file.");
-
-            Console.WriteLine("Lets try to parse the readfile JSON....");
-            ReadFileJSONParser rfjp = new ReadFileJSONParser();
-            rfjp.testIt(ci);
+            Console.WriteLine(ci.plateLookups.Count + " Entries in the plate lookup file.");
+            Console.WriteLine("His any key to continue....");
+            Console.ReadKey();
+            //Console.WriteLine("Lets try to parse the readfile JSON....");
+            //ReadFileJSONParser rfjp = new ReadFileJSONParser();
+            //rfjp.testIt(ci);
             ReadGenProcesser rgp = AbstractFactory(ci);
             //Execute the processing
             ProcessingReturn pr = rgp.executeProcess(ci);

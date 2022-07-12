@@ -51,21 +51,27 @@
     <Compile Include="AlarmMgmtJSONParser.cs" />
     <Compile Include="AlarmMgmtStruct.cs" />
     <Compile Include="ApplicationConfig.cs" />
+    <Compile Include="CGInfo.cs" />
     <Compile Include="ConfigInfo.cs" />
     <Compile Include="DeriveImages.cs" />
     <Compile Include="DoNothingProcessor.cs" />
     <Compile Include="EnvironmentConfig.cs" />
+    <Compile Include="EOCGuid.cs" />
     <Compile Include="ImagesData.cs" />
     <Compile Include="LookupProcessor.cs" />
+    <Compile Include="PlateLookup.cs" />
     <Compile Include="ProcessingReturn.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PutReadRequest.cs" />
     <Compile Include="RandomProcessor.cs" />
     <Compile Include="ReadContainer.cs" />
     <Compile Include="ReadFileJSONParser.cs" />
     <Compile Include="ReadGenProcesser.cs" />
     <Compile Include="ReadInImageFile.cs" />
     <Compile Include="ReadStruct.cs" />
+    <Compile Include="ReadXmlMaker.cs" />
+    <Compile Include="RESTBase.cs" />
     <Compile Include="SequentialProcessor.cs" />
     <Compile Include="SQLQueryHelper.cs" />
   </ItemGroup>
