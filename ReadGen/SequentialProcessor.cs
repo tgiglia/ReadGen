@@ -11,6 +11,7 @@ namespace ReadGen
     {
         public override ProcessingReturn executeProcess(ConfigInfo ci)
         {
+           
             ProcessingReturn pr = new ProcessingReturn();
             pr.status = 0;
             pr.description = "Success";
@@ -98,7 +99,7 @@ namespace ReadGen
 
             //Create the XML
             EOCGuid eocGuid = new EOCGuid();
-            string timeStamp = genTimestamp();
+            string timeStamp = genTimestamp(rs.read_date);
             eocGuid.createGuidUS(timeStamp, rs.plate, rs.camera_name);
             Guid readId = eocGuid.readID;
             cgi.id = readId.ToString();
@@ -109,7 +110,6 @@ namespace ReadGen
             PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);
             HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
             Console.WriteLine("SequentialProcessor::processRead: status = " + status.ToString());
-
 
             return true;
         }                                          
