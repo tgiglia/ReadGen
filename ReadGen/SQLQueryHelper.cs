@@ -62,26 +62,36 @@ namespace ReadGen
             }
 
             //Get the reader from the parent ID of the Camera Name.
-            cgi.reader = getReaderFromParentId(cgi.readerId);
-            
+            CGInfo cgiReader = getReaderFromParentId(cgi.readerId);
+            cgi.reader = cgiReader.reader;
+            cgi.lat = cgi.lat;
+            cgi.lon = cgi.lon;
             closeSqlConnection();
             return cgi;
         }
-        private string getReaderFromParentId(string parentId)
+        private CGInfo getReaderFromParentId(string parentId)
         {
-            
+            CGInfo cgi = new CGInfo();
             //select description from sites where site_id = '7EF7AE03-B003-4919-8B50-F9B006538059';
-            String sql = "select description from sites where site_id = '" + parentId + "'";
+            String sql = "select description,lat,lon from sites where site_id = '" + parentId + "'";
             string readerName = null;
             SqlCommand command = new SqlCommand(sql, conn);
             reader = command.ExecuteReader();
             while(reader.Read())
             {
                 readerName = reader.GetString(0);
-
+                cgi.reader = readerName;
+                if (!reader.IsDBNull(1))
+                {
+                    cgi.lat = reader.GetDouble(1);
+                }
+                if (!reader.IsDBNull(2))
+                {
+                    cgi.lon = reader.GetDouble(2);
+                }
             }
             reader.Close();
-            return readerName;
+            return cgi;
         }
         private CGInfo getParentID(string cameraName)
         {

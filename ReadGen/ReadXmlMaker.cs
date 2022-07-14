@@ -116,7 +116,6 @@ namespace ReadGen
             xw.WriteString(timeStamp);
             xw.WriteEndElement();
 
-
             //Add the image data
             xw.WriteStartElement("imagedata");
             string s = Convert.ToBase64String(imageBytes, 0, imageBytes.Length);
@@ -159,6 +158,25 @@ namespace ReadGen
             //end snapshot element
             xw.WriteEndElement();
             xw.WriteEndElement();
+
+            //Start Position
+            xw.WriteStartElement("gps");
+            xw.WriteAttributeString("rev", "0");
+            xw.WriteStartElement("timestamp");
+            //write timestamp string
+            xw.WriteString(timeStamp);
+            xw.WriteEndElement();//End timestamp element
+            xw.WriteStartElement("position");
+            xw.WriteAttributeString("lat", cgi.lat.ToString());
+            xw.WriteAttributeString("long", cgi.lon.ToString());
+            xw.WriteAttributeString("errorradius", "15.9357481");
+            xw.WriteEndElement();
+            //End position
+            xw.WriteStartElement("velocity");
+            xw.WriteAttributeString("east", "0.0251652766");
+            xw.WriteAttributeString("north", "-0.03739889");
+            xw.WriteEndElement();//end velocity
+            xw.WriteEndElement();//End GPS
 
             xw.WriteStartElement("facing");
             xw.WriteString("Front");
