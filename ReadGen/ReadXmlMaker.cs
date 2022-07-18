@@ -116,6 +116,12 @@ namespace ReadGen
             xw.WriteString(timeStamp);
             xw.WriteEndElement();
 
+            if(rs.speed != 0)
+            {
+                xw.WriteStartElement("speed");
+                xw.WriteString(rs.speed.ToString());
+                xw.WriteEndElement();
+            }
             //Add the image data
             xw.WriteStartElement("imagedata");
             string s = Convert.ToBase64String(imageBytes, 0, imageBytes.Length);
@@ -137,9 +143,29 @@ namespace ReadGen
             xw.WriteString(plate);
             xw.WriteEndElement();
 
+            string sConfidence = null;
+            try
+            {
+                sConfidence = rs.confidence.ToString();
+            }catch(Exception e)
+            {
+                sConfidence = "75";
+            }
             xw.WriteStartElement("confidence");
-            xw.WriteString("75");
+            xw.WriteString(sConfidence);
             xw.WriteEndElement();
+
+            if((rs.model != null) && (rs.make != null))
+            {
+                xw.WriteStartElement("vehicleinformation");
+                xw.WriteStartElement("Make");
+                xw.WriteString(rs.make);
+                xw.WriteEndElement();//end make
+                xw.WriteStartElement("ModelId");
+                xw.WriteString(rs.model);
+                xw.WriteEndElement();//end ModelId
+                xw.WriteEndElement();//end vehicleinformation
+            }
 
             xw.WriteStartElement("overviews");
             //Create snapshot element
