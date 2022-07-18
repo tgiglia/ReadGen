@@ -10,6 +10,7 @@ namespace ReadGen
     {
         public string read_method { get; set; }
         public string plate { get; set; }
+        public string state { get; set; }
         public string read_date { get; set; }
         public string camera_name { get; set; }
         public float latitude { get; set; }

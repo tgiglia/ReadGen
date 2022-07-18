@@ -99,12 +99,22 @@ namespace ReadGen
 
             //Create the XML
             EOCGuid eocGuid = new EOCGuid();
-            string timeStamp = genTimestamp(rs.read_date);
+            string timeStamp = null;
+            if(rs.read_date != null)
+            {
+                timeStamp = genTimestamp(rs.read_date);
+            }
+            else
+            {
+                timeStamp = genTimestamp();
+            }
+           
             eocGuid.createGuidUS(timeStamp, rs.plate, rs.camera_name);
             Guid readId = eocGuid.readID;
             cgi.id = readId.ToString();
             ReadXmlMaker rxm = new ReadXmlMaker();
-            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci);
+           
+            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs);
             Console.WriteLine("XML:\n" + requestXml);
             //Send the REST request
             PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);

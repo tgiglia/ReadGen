@@ -89,7 +89,7 @@ namespace ReadGen
             return sb.ToString();
         }
         public String deriveXmlUS(CGInfo cgi, String plate, String timeStamp, byte[] imageBytes, byte[] oimageBytes, EOCGuid eocGuid,
-                                     ConfigInfo configData)
+                                     ConfigInfo configData,ReadStruct rs)
         {
 
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -126,6 +126,13 @@ namespace ReadGen
             xw.WriteString("Invariant");
             xw.WriteEndElement();
 
+
+            if(rs.state != null)
+            {
+                xw.WriteStartElement("state");
+                xw.WriteString(rs.state);
+                xw.WriteEndElement();
+            }
             xw.WriteStartElement("plate");
             xw.WriteString(plate);
             xw.WriteEndElement();
