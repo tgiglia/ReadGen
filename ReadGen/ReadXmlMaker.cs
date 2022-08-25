@@ -89,7 +89,7 @@ namespace ReadGen
             return sb.ToString();
         }
         public String deriveXmlUS(CGInfo cgi, String plate, String timeStamp, byte[] imageBytes, byte[] oimageBytes, EOCGuid eocGuid,
-                                     ConfigInfo configData,ReadStruct rs)
+                                     ConfigInfo configData,ReadStruct rs, ImagesData id)
         {
 
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -214,6 +214,14 @@ namespace ReadGen
             xw.WriteStartElement("facing");
             xw.WriteString("Front");
             xw.WriteEndElement();
+            //Plate location
+            xw.WriteStartElement("platelocation");
+            xw.WriteAttributeString("height", id.height);
+            xw.WriteAttributeString("width", id.width);
+            xw.WriteAttributeString("y", id.origy);
+            xw.WriteAttributeString("x", id.origx);
+            xw.WriteEndElement();
+            
 
             xw.WriteEndElement();//end read element
             xw.WriteEndDocument();
@@ -221,6 +229,134 @@ namespace ReadGen
             return sb.ToString();
 
         }
+        public String buildAlarmXMLUS(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, 
+            ListDetail ld)
+        {
+            StringBuilder sb = new StringBuilder();
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                NewLineOnAttributes = true,
+                OmitXmlDeclaration = true
+            };
+            XmlWriter xw = XmlWriter.Create(sb, xmlWriterSettings);
+            xw.WriteStartDocument();
+            xw.WriteStartElement("alarm", "elsag:lprcore");
+            xw.WriteAttributeString("id", alarmId);
+            xw.WriteAttributeString("rev", "1");
+            xw.WriteAttributeString("status", "4");
+            xw.WriteAttributeString("xmlns", "xsd", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema");
+            xw.WriteAttributeString("xmlns", "xsi", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema-instance");
 
+            xw.WriteStartElement("alarmtimestamp");
+            xw.WriteString(timeStamp);
+            xw.WriteEndElement();//alarmtimestamp
+
+            xw.WriteStartElement("domain");
+            xw.WriteString(cgi.domainIdStr);
+            xw.WriteEndElement();//domain
+            //Write the READ XML
+            xw.WriteRaw(readXML);
+            xw.WriteStartElement("hotlistentry");
+            xw.WriteAttributeString("id", ld.list_detail_id);
+            xw.WriteAttributeString("rev", "1");
+            xw.WriteAttributeString("ListId", ld.list_id);
+            xw.WriteAttributeString("ListTypeId", ld.list_type_id.ToString());
+            xw.WriteStartElement("DomainId");
+            xw.WriteString("1");
+            xw.WriteEndElement();//END DomainId
+
+            xw.WriteStartElement("Plate");
+            xw.WriteString(plate);
+            xw.WriteEndElement();//end Plate
+
+            xw.WriteStartElement("OfficerNotes");
+            xw.WriteEndElement();//END OfficerNotes
+
+            xw.WriteStartElement("AlarmClassId2");
+            xw.WriteString("9");
+            xw.WriteEndElement();//AlarmClassId2
+            xw.WriteStartElement("CreateDate");
+            xw.WriteString(timeStamp);
+            xw.WriteEndElement();//END Create Date
+            xw.WriteEndElement();//END hotlistentry
+
+            xw.WriteEndElement();//END alarm
+            xw.WriteEndDocument();
+            xw.Close();
+            return sb.ToString();           
+        }
+        public String buildAlarmXMLUK(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, String hotListId,
+    String yesterdayStr)
+        {
+            StringBuilder sb = new StringBuilder();
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                NewLineOnAttributes = true,
+                OmitXmlDeclaration = true
+            };
+            XmlWriter xw = XmlWriter.Create(sb, xmlWriterSettings);
+            xw.WriteStartDocument();
+            xw.WriteStartElement("alarm", "elsag:lprcore");
+            xw.WriteAttributeString("id", alarmId);
+            xw.WriteAttributeString("rev", "1");
+            xw.WriteAttributeString("status", "4");
+            xw.WriteAttributeString("xmlns", "xsd", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema");
+            xw.WriteAttributeString("xmlns", "xsi", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema-instance");
+
+            xw.WriteStartElement("alarmtimestamp");
+            xw.WriteString(timeStamp);
+            xw.WriteEndElement();
+
+            xw.WriteStartElement("domain");
+            xw.WriteString("1");
+            xw.WriteEndElement();
+            xw.WriteRaw(readXML);
+
+            xw.WriteStartElement("hotlistentryid");
+            xw.WriteAttributeString("id", hotListId);
+            xw.WriteAttributeString("rev", "1");
+            xw.WriteAttributeString("ListId", "cd8ed894-23c3-4c2e-ad6b-f91ba7b14b66");
+            xw.WriteAttributeString("ListTypeId", "7");
+
+
+            xw.WriteStartElement("LocalCode");
+            xw.WriteString("GB");
+            xw.WriteEndElement();
+
+            xw.WriteStartElement("Plate");
+            xw.WriteString(plate);
+            xw.WriteEndElement();
+
+            xw.WriteStartElement("AlarmClassId2");
+            xw.WriteString("22");
+            xw.WriteEndElement();
+
+            xw.WriteStartElement("AlarmClassId");
+            xw.WriteString("22");
+            xw.WriteEndElement();
+
+            xw.WriteStartElement("BeginDate");
+            xw.WriteString(yesterdayStr);
+            xw.WriteEndElement();
+            /*
+            xw.WriteStartElement("Notes");
+            xw.WriteString("C-Burglary");
+            xw.WriteEndElement();
+            */
+            xw.WriteStartElement("CreateDate");
+            xw.WriteString(timeStamp);
+            xw.WriteEndElement();
+            xw.WriteEndElement();
+
+            xw.WriteEndDocument();
+            xw.Close();
+            return sb.ToString();
+        }
     }
 }
+
+

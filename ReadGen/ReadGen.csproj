@@ -58,6 +58,7 @@
     <Compile Include="EnvironmentConfig.cs" />
     <Compile Include="EOCGuid.cs" />
     <Compile Include="ImagesData.cs" />
+    <Compile Include="ListDetail.cs" />
     <Compile Include="LookupProcessor.cs" />
     <Compile Include="PlateLookup.cs" />
     <Compile Include="ProcessingReturn.cs" />

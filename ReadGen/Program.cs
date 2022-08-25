@@ -16,7 +16,7 @@ namespace ReadGen
                 Console.WriteLine("args length: " + args.Length);
                 return;
             }
-            Console.WriteLine("Congradulations you entered enough command line arguments!");
+            //Console.WriteLine("Congradulations you entered enough command line arguments!");
             ConfigInfo ci = new ConfigInfo(args[0], args[1]);
             if(!ci.Load())
             {
@@ -30,8 +30,8 @@ namespace ReadGen
             Console.WriteLine(ci.cameras.Count + " Entries in the camera file.");
             Console.WriteLine(ci.alarmUsers.Count + " Entries in the alarm users file.");
             Console.WriteLine(ci.plateLookups.Count + " Entries in the plate lookup file.");
-            Console.WriteLine("His any key to continue....");
-            Console.ReadKey();
+            /*Console.WriteLine("His any key to continue....");
+            Console.ReadKey();*/
             //Console.WriteLine("Lets try to parse the readfile JSON....");
             //ReadFileJSONParser rfjp = new ReadFileJSONParser();
             //rfjp.testIt(ci);
@@ -41,8 +41,8 @@ namespace ReadGen
             Console.WriteLine("Execution Status: " + pr.status);
             Console.WriteLine("Execution Description: " + pr.description);
 
-            Console.WriteLine("Press any key to end.");
-            Console.ReadKey();
+            /*Console.WriteLine("Press any key to end.");
+            Console.ReadKey();*/
         }
 
         static ReadGenProcesser AbstractFactory(ConfigInfo ci)

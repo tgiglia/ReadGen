@@ -114,6 +114,18 @@ namespace ReadGen
             }
             return true;
         }
+        public PlateLookup lookupPlate(String plate)
+        {
+
+            foreach(PlateLookup pl in plateLookups)
+            {
+                if(pl.plate.Equals(plate))
+                {
+                    return pl;
+                }
+            }
+            return null;
+        }
         private bool loadCameraFile(String filePath)
         {
             try

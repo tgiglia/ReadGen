@@ -32,7 +32,7 @@ namespace ReadGen
             DateTime localTime = DateTime.Now;
 
 
-            if(s.Equals("TODAY_NOW"))
+            if(s.Equals("TODAY NOW"))
             {
                 DateTimeOffset localTimeAndOffset = new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
                 return noMilliseconds(localTimeAndOffset);

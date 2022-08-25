@@ -45,10 +45,41 @@ namespace ReadGen
                 Console.WriteLine(e.ToString());
             }
         }
+        public ListDetail getListEntries(string plate, string state, string readDate)
+        {
+            ListDetail ld = new ListDetail();
+            bool bFound = false;
+            if (!openSqlConnection())
+            {
+                Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: " +
+                    "Could not open connection to: " + cd.ec.datasource);
+                return null;
+            }
+
+            String sql = "select list_detail_id,list_id,list_type_id from list_detail where plate='" + plate + "' and begin_date <'" + readDate + "' and ( begin_date <= '" + readDate +
+                "' or end_date is null) and list_type_id = (select list_type_id from list_type_lookup where description = 'list_type_lookup_HotList')";
+            Console.WriteLine("sql:" + sql);
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                ld.list_detail_id = reader.GetGuid(0).ToString();
+                ld.list_id = reader.GetGuid(1).ToString();
+                ld.list_type_id = reader.GetInt32(2);
+                bFound = true;
+            }
+            closeSqlConnection();
+            if (!bFound)
+            {
+                return null;
+            }
+            return ld;
+        }
         public CGInfo getReaderFromCameraName(string cameraName)
         {
             
-            if(!openSqlConnection())
+
+            if (!openSqlConnection())
             {
                 Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: " +
                     "Could not open connection to: " + cd.ec.datasource);
@@ -69,6 +100,7 @@ namespace ReadGen
             closeSqlConnection();
             return cgi;
         }
+
         private CGInfo getReaderFromParentId(string parentId)
         {
             CGInfo cgi = new CGInfo();

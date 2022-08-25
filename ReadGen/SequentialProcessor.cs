@@ -82,19 +82,17 @@ namespace ReadGen
             //Perform the Image lookup -- should be lib function
             DeriveImages di = new DeriveImages();
             ImagesData id = di.getImages(ci, rs);
+            if(id == null)
+            {
+                Console.WriteLine("SequentialProcessor::processRead: Image Read FAILED!");
+                return false;
+            }
             if(id.plateBytes == null || id.overviewBytes == null)
             {
                 Console.WriteLine("SequentialProcessor::processRead: Image Read FAILED!");
                 return false;
             }
-            //Do we have to generate alarms? Check genalarms in Environment file
-            //if genalarms 
-            if(ci.ec.genalarms.Equals("true"))
-            {
-                Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
-                //Check EOC_TRAN for list entries
-                // generate alarms if there are list entries
-            }
+           
 
 
             //Create the XML
@@ -114,12 +112,30 @@ namespace ReadGen
             cgi.id = readId.ToString();
             ReadXmlMaker rxm = new ReadXmlMaker();
            
-            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs);
+            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs,id);
             Console.WriteLine("XML:\n" + requestXml);
             //Send the REST request
             PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);
             HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
             Console.WriteLine("SequentialProcessor::processRead: status = " + status.ToString());
+            //Do we have to generate alarms? Check genalarms in Environment file
+            //if genalarms 
+            if (ci.ec.genalarms.Equals("true"))
+            {
+                Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
+                //Check EOC_TRAN for list entries
+                // generate alarms if there are list entries
+                ListDetail ld = sqh.getListEntries(rs.plate, rs.state, timeStamp);
+                if (ld != null)
+                {
+                    Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
+                    Guid alarmG = Guid.NewGuid();
+                    String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld);
+                    Console.WriteLine(sAlarmXML);
+                    prr.PutResourceAlarmRequest(alarmG.ToString(),sAlarmXML);
+                }
+            }
+           
 
             return true;
         }                                          
