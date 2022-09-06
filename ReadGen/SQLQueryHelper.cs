@@ -95,8 +95,8 @@ namespace ReadGen
             //Get the reader from the parent ID of the Camera Name.
             CGInfo cgiReader = getReaderFromParentId(cgi.readerId);
             cgi.reader = cgiReader.reader;
-            cgi.lat = cgi.lat;
-            cgi.lon = cgi.lon;
+            cgi.lat = cgiReader.lat;
+            cgi.lon = cgiReader.lon;
             closeSqlConnection();
             return cgi;
         }

@@ -39,8 +39,7 @@ namespace ReadGen
             //Execute the processing
             ProcessingReturn pr = rgp.executeProcess(ci);
             Console.WriteLine("Execution Status: " + pr.status);
-            Console.WriteLine("Execution Description: " + pr.description);
-
+             Console.WriteLine("Execution Description: " + pr.description);
             /*Console.WriteLine("Press any key to end.");
             Console.ReadKey();*/
         }
