@@ -16,6 +16,8 @@ namespace ReadGen
                 Console.WriteLine("args length: " + args.Length);
                 return;
             }
+
+
             //Console.WriteLine("Congradulations you entered enough command line arguments!");
             ConfigInfo ci = new ConfigInfo(args[0], args[1]);
             if(!ci.Load())
@@ -41,7 +43,7 @@ namespace ReadGen
             Console.WriteLine("Execution Status: " + pr.status);
              Console.WriteLine("Execution Description: " + pr.description);
             /*Console.WriteLine("Press any key to end.");
-            Console.ReadKey();*/
+            Console.ReadKey(); */
         }
 
         static ReadGenProcesser AbstractFactory(ConfigInfo ci)

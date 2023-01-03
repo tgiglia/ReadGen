@@ -26,6 +26,7 @@ namespace ReadGen
             }
             else
             {
+
                 if(ci.ac.plate_image_path != null && ci.ac.overview_image_path != null)
                 {
                     try

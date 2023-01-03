@@ -75,6 +75,60 @@ namespace ReadGen
             }
             return ld;
         }
+        public List<ListDetail> getListEntries(ReadStruct rs,string timeStamp)
+        {
+            List<ListDetail> ldList = new List<ListDetail>();
+
+            bool bFound = false;
+            if (!openSqlConnection())
+            {
+                Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: " +
+                    "Could not open connection to: " + cd.ec.datasource);
+                return null;
+            }
+            string plate = rs.plate;
+            string state = rs.state;
+            string readDate = timeStamp;
+            string sql = deriveListDetailStr(plate, state, readDate);
+            Console.WriteLine("sql:" + sql);
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                ListDetail ld = new ListDetail();
+                ld.list_detail_id = reader.GetGuid(0).ToString();
+                ld.list_id = reader.GetGuid(1).ToString();
+                ld.list_type_id = reader.GetInt32(2);
+                ld.alarm_class_id = reader.GetInt32(3);
+                bFound = true;
+                ldList.Add(ld);
+            }
+
+            closeSqlConnection();
+            if (!bFound)
+            {
+                return null;
+            }
+            return ldList;
+        }
+        private string deriveListDetailStr(string plate, string state, string readDate)
+        {
+            string s = "select list_detail_id,list_id,list_type_id,alarm_class_id from list_detail where plate='" + plate + "' and begin_date <'" + readDate + 
+                "' and ( end_date >= '" + readDate +
+                "' or end_date is null) and list_type_id = (select list_type_id from list_type_lookup where description = 'list_type_lookup_HotList')";
+
+            if (state == null)
+            {
+                return s;
+            }
+            if(state.Length < 2)
+            {
+                return s;
+            }
+            string end = "\nand ( locale_id = '" + state + "' or locale_id is null )";
+            string complete = s + end;
+            return complete;
+        }
         public CGInfo getReaderFromCameraName(string cameraName)
         {
             
@@ -87,8 +141,9 @@ namespace ReadGen
             }
             //Get the parent ID from the CameraName
             CGInfo cgi = getParentID(cameraName);
-            if(cgi == null)
+            if(cgi.readerId == null)
             {
+                Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: ERROR " + cameraName + " Doesnt have a readerID.");
                 return null;
             }
 

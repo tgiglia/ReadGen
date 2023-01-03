@@ -11,5 +11,6 @@ namespace ReadGen
         public string list_detail_id { get; set; }
         public string list_id { get; set; }
         public int list_type_id { get; set; }
+        public int alarm_class_id { get; set; }
     }
 }

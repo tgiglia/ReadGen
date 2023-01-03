@@ -26,6 +26,7 @@ namespace ReadGen
                     pr.status++;
                 }
             }
+
             if(pr.status > 0)
             {
                 pr.description = "A number of reads failed.";
@@ -55,7 +56,7 @@ namespace ReadGen
                     return false;
                 }
                 //Select a camera from the Camera file -- should be lib function
-                camera = getRandomCamera(ci);
+                camera = getCameraFromCamfile(ci);
             }
             else
             {
@@ -107,13 +108,13 @@ namespace ReadGen
                 timeStamp = genTimestamp();
             }
            
-            eocGuid.createGuidUS(timeStamp, rs.plate, rs.camera_name);
+            eocGuid.createGuidUS(timeStamp, rs.plate, camera);
             Guid readId = eocGuid.readID;
             cgi.id = readId.ToString();
             ReadXmlMaker rxm = new ReadXmlMaker();
            
             String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs,id);
-            Console.WriteLine("XML:\n" + requestXml);
+            //Console.WriteLine("XML:\n" + requestXml);
             //Send the REST request
             PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);
             HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
@@ -125,14 +126,19 @@ namespace ReadGen
                 Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
                 //Check EOC_TRAN for list entries
                 // generate alarms if there are list entries
-                ListDetail ld = sqh.getListEntries(rs.plate, rs.state, timeStamp);
-                if (ld != null)
+                //ListDetail ld = sqh.getListEntries(rs.plate, rs.state, timeStamp);
+                List<ListDetail> ldList = sqh.getListEntries(rs,timeStamp);
+                if (ldList != null)
                 {
-                    Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
-                    Guid alarmG = Guid.NewGuid();
-                    String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld);
-                    Console.WriteLine(sAlarmXML);
-                    prr.PutResourceAlarmRequest(alarmG.ToString(),sAlarmXML);
+                    foreach(ListDetail ld in ldList)
+                    {
+                        Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
+                        Guid alarmG = Guid.NewGuid();
+                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld);
+                        //Console.WriteLine(sAlarmXML);
+                        prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
+                    }
+                    
                 }
             }
            

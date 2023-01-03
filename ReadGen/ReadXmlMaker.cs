@@ -275,7 +275,8 @@ namespace ReadGen
             xw.WriteEndElement();//END OfficerNotes
 
             xw.WriteStartElement("AlarmClassId2");
-            xw.WriteString("9");
+            
+            xw.WriteString(ld.alarm_class_id.ToString());
             xw.WriteEndElement();//AlarmClassId2
             xw.WriteStartElement("CreateDate");
             xw.WriteString(timeStamp);

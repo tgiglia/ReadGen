@@ -10,10 +10,10 @@ namespace ReadGen
 {
     class LookupProcessor : ReadGenProcesser
     {
-        Random rndGlobal;
+        
         public LookupProcessor()
         {
-            rndGlobal = new Random();
+            
         }
         public override ProcessingReturn executeProcess(ConfigInfo ci)
         {
@@ -106,15 +106,19 @@ namespace ReadGen
                     Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
                     //Check EOC_TRAN for list entries
                     // generate alarms if there are list entries
-                    ListDetail ld = sqh.getListEntries(rs.plate, rs.state, rs.read_date);
-                    if (ld != null)
+                    //ListDetail ld = sqh.getListEntries(rs.plate, rs.state, rs.read_date);
+                    List<ListDetail> ldList = sqh.getListEntries(rs, rs.read_date);
+                    if (ldList != null)
                     {
-                        Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
-                        Guid alarmG = Guid.NewGuid();
-                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), 
-                            rs.read_date, rs.plate, ld);
-                        Console.WriteLine(sAlarmXML);
-                        prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
+                        foreach (ListDetail ld in ldList)
+                        {
+                            Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
+                            Guid alarmG = Guid.NewGuid();
+                            String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), rs.read_date, rs.plate, ld);
+                            Console.WriteLine(sAlarmXML);
+                            prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
+                        }
+
                     }
                 }
 
@@ -124,11 +128,6 @@ namespace ReadGen
             
             return pr;
         }
-        private string getCameraFromCamfile(ConfigInfo ci)
-        {
-            int idx = rndGlobal.Next(0, ci.cameras.Count);
-
-            return ci.cameras[idx];
-        }
+        
     }
 }
