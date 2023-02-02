@@ -98,8 +98,19 @@ namespace ReadGen
                 String requestXml = rxm.deriveXmlUS(cgi, rs.plate, rs.read_date, id.plateBytes, id.overviewBytes, eocGuid, ci, rs,id);
                 Console.WriteLine("XML:\n" + requestXml);
                 PutReadRequest prr = new PutReadRequest(ci.ec.username, ci.ec.password, ci.ec.readAgg);
-                HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
-                Console.WriteLine("LookupProcessor::processRead: status = " + status.ToString());
+                try
+                {
+                    
+                    HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
+                    Console.WriteLine("LookupProcessor::processRead: status = " + status.ToString());
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    pr.status++;
+                    continue;
+                }
+                
 
                 if (ci.ec.genalarms.Equals("true"))
                 {
@@ -114,7 +125,7 @@ namespace ReadGen
                         {
                             Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
                             Guid alarmG = Guid.NewGuid();
-                            String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), rs.read_date, rs.plate, ld);
+                            String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), rs.read_date, rs.plate, ld,ci);
                             Console.WriteLine(sAlarmXML);
                             prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
                         }

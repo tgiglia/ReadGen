@@ -48,19 +48,7 @@ namespace ReadGen
                 return deriveTodayWTimeStamp(s);
             }
             return deriveFromAbsoluteTimeStamp(s);
-            /*try
-            {
-                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById(s);
-                DateTime tstTime = TimeZoneInfo.ConvertTime(localTime, TimeZoneInfo.Local, tzi);
-                DateTimeOffset localTimeAndOffset = new DateTimeOffset(tstTime, TimeZoneInfo.Local.GetUtcOffset(tstTime));
-                return noMilliseconds(localTimeAndOffset);
-            }catch(Exception e)
-            {
-                Console.WriteLine("ERROR with readTime" + s + " using time from current timezone.");
-                DateTimeOffset localTimeAndOffset = new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
-                return noMilliseconds(localTimeAndOffset);
-            }
-            return s;*/
+            
         }
         private string deriveFromAbsoluteTimeStamp(string s)
         {

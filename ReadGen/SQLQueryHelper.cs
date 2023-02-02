@@ -100,6 +100,20 @@ namespace ReadGen
                 ld.list_id = reader.GetGuid(1).ToString();
                 ld.list_type_id = reader.GetInt32(2);
                 ld.alarm_class_id = reader.GetInt32(3);
+                ld.created_date = reader.GetDateTimeOffset(4);
+                if (!reader.IsDBNull(5))
+                {
+                    
+                    ld.end_date = reader.GetDateTimeOffset(5);
+                }
+                if(!reader.IsDBNull(6))
+                {
+                    ld.notes = reader.GetString(6);
+                }
+                if(!reader.IsDBNull(7))
+                {
+                    ld.begin_date = reader.GetDateTimeOffset(7);
+                }
                 bFound = true;
                 ldList.Add(ld);
             }
@@ -113,7 +127,7 @@ namespace ReadGen
         }
         private string deriveListDetailStr(string plate, string state, string readDate)
         {
-            string s = "select list_detail_id,list_id,list_type_id,alarm_class_id from list_detail where plate='" + plate + "' and begin_date <'" + readDate + 
+            string s = "select list_detail_id,list_id,list_type_id,alarm_class_id,create_date,end_date,notes,begin_date from list_detail where plate='" + plate + "' and begin_date <'" + readDate + 
                 "' and ( end_date >= '" + readDate +
                 "' or end_date is null) and list_type_id = (select list_type_id from list_type_lookup where description = 'list_type_lookup_HotList')";
 
@@ -208,6 +222,70 @@ namespace ReadGen
             }
             reader.Close();
             return cgi;
+        }
+        private string deriveDomainFromUser(string user)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT lower(u.UserId) as ID, dl.description FROM aspnet_Users u join\n");
+            sb.Append("(select UserId, DomainId, UserDesc, FirstName, LastName, Occupation, Organization, ORI, SMS from\n");
+            sb.Append("(select UserId , propertyname, propertyvaluestring from aspnetx_eocprofile) ");
+            sb.Append("as a pivot(max(propertyvaluestring) for propertyname in  ");
+            sb.Append("(DomainId, UserDesc, FirstName, LastName, Occupation, Organization, ORI, SMS)) as pvt) as p on u.UserId = p.UserId\n");
+            sb.Append("LEFT OUTER JOIN aspnet_Membership AS m ON u.UserId = m.UserId\n");
+            sb.Append("INNER JOIN domain_lookup AS dl ON domainId = dl.domain_id\n");
+            sb.Append("WHERE UserName = '" + user + "'");
+            return sb.ToString();
+        }
+        private string deriveEmailFromUser(string user)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select aspnet_Membership.Email as 'E-Mail' from aspnet_Users ");
+            sb.Append("join aspnet_Membership on aspnet_Users.UserId = aspnet_Membership.UserId ");
+            sb.Append(" where UserName = '" + user + "'");
+
+            return sb.ToString();
+        }
+        private string getEmailFromUser(string user)
+        {
+            string sql = deriveEmailFromUser(user);
+            string email = null;
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                email = reader.GetString(0);
+            }
+            reader.Close();
+
+            return email;
+        }
+        private string getDomainFromUser(string user)
+        {
+            string sql = deriveDomainFromUser(user);
+            string domain = null;
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                domain = reader.GetString(1);                
+            }
+            reader.Close();
+            return domain;
+        }
+        public DomainEmail getDomainAndEmailFromUser(string user)
+        {
+            DomainEmail dm = new DomainEmail();
+            if (!openSqlConnection())
+            {
+                Console.WriteLine("SQLQueryHelper::getReaderFromCameraName: " +
+                    "Could not open connection to: " + cd.ec.datasource);
+                return null;
+            }
+            dm.domain = getDomainFromUser(user);
+            dm.email = getEmailFromUser(user);
+
+            closeSqlConnection();
+            return dm;
         }
     }
 }

@@ -229,8 +229,38 @@ namespace ReadGen
             return sb.ToString();
 
         }
-        public String buildAlarmXMLUS(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, 
-            ListDetail ld)
+        private string deriveResultText(ConfigInfo ci, AlarmMgmtStruct ams)
+        {
+            SQLQueryHelper sqh = new SQLQueryHelper(ci);
+            DomainEmail dm = sqh.getDomainAndEmailFromUser(ci.ec.username);
+            DateTime dt = DateTime.Now;
+            StringBuilder sb = new StringBuilder();
+
+            if(dm == null)
+            {
+                return null;
+            }
+            if(dm.email == null)
+            {
+                sb.Append("***\n");
+                sb.Append(ci.ec.username + " " + dm.domain + "\n" + dt.ToString() + "\n\n");
+                sb.Append(ams.note + "\n");
+                sb.Append("Alarm managed by ReadGen");
+
+            }else
+            {
+                sb.Append("***\n");
+                sb.Append("[eoc-url=mailto:" + dm.email + "]" + 
+                    ci.ec.username + "[//eoc-url] "+ dm.domain + "\n");
+                sb.Append(dt.ToString() + "\n\n");
+                sb.Append(ams.note + "\n");
+                sb.Append("Alarm managed by ReadGen");
+            }
+            return sb.ToString();
+        }
+        public String buildAlarmXMLUS(String readXML, CGInfo cgi, String alarmId, String timeStamp,
+            String plate, 
+            ListDetail ld,ConfigInfo ci)
         {
             StringBuilder sb = new StringBuilder();
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -240,18 +270,34 @@ namespace ReadGen
                 NewLineOnAttributes = true,
                 OmitXmlDeclaration = true
             };
+            AlarmMgmtStruct ams  = ci.getRandomAlarmMgmt();
             XmlWriter xw = XmlWriter.Create(sb, xmlWriterSettings);
             xw.WriteStartDocument();
             xw.WriteStartElement("alarm", "elsag:lprcore");
             xw.WriteAttributeString("id", alarmId);
             xw.WriteAttributeString("rev", "1");
-            xw.WriteAttributeString("status", "4");
+            xw.WriteAttributeString("status", ams.status.ToString());
             xw.WriteAttributeString("xmlns", "xsd", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema");
             xw.WriteAttributeString("xmlns", "xsi", "http://www.w3.org/2000/xmlns/", "http://www.w3.org/2001/XMLSchema-instance");
 
             xw.WriteStartElement("alarmtimestamp");
             xw.WriteString(timeStamp);
             xw.WriteEndElement();//alarmtimestamp
+
+            if(ams.status != 4)
+            {
+                xw.WriteStartElement("RejectedReason2");
+                xw.WriteString(ams.reason.ToString());
+                xw.WriteEndElement();//RejectedReason2
+                string s = deriveResultText(ci, ams);
+                if(s != null)
+                {
+                    xw.WriteStartElement("ResultText");
+                    xw.WriteString(ams.note);
+                    xw.WriteEndElement();//ResultText
+                }
+                
+            }
 
             xw.WriteStartElement("domain");
             xw.WriteString(cgi.domainIdStr);
@@ -278,9 +324,30 @@ namespace ReadGen
             
             xw.WriteString(ld.alarm_class_id.ToString());
             xw.WriteEndElement();//AlarmClassId2
+
             xw.WriteStartElement("CreateDate");
-            xw.WriteString(timeStamp);
+            xw.WriteString(ld.created_date.ToString()) ;
             xw.WriteEndElement();//END Create Date
+
+            if(ld.begin_date != null)
+            {
+                xw.WriteStartElement("BeginDate");
+                xw.WriteString(ld.begin_date.ToString());
+                xw.WriteEndElement();//END BeginDate
+            }
+            if(ld.end_date != null)
+            {
+                xw.WriteStartElement("EndDate");
+                xw.WriteString(ld.end_date.ToString());
+                xw.WriteEndElement();//END EndDate
+            }
+            if(ld.notes != null)
+            {
+                xw.WriteStartElement("Notes");
+                xw.WriteString(ld.notes);
+                xw.WriteEndElement();//END Notes
+            }
+
             xw.WriteEndElement();//END hotlistentry
 
             xw.WriteEndElement();//END alarm
@@ -288,6 +355,7 @@ namespace ReadGen
             xw.Close();
             return sb.ToString();           
         }
+
         public String buildAlarmXMLUK(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, String hotListId,
     String yesterdayStr)
         {

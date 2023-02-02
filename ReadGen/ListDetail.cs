@@ -12,5 +12,9 @@ namespace ReadGen
         public string list_id { get; set; }
         public int list_type_id { get; set; }
         public int alarm_class_id { get; set; }
+        public DateTimeOffset created_date { get; set; }
+        public DateTimeOffset begin_date { get; set; }
+        public DateTimeOffset end_date { get; set; }
+        public string notes { get; set; }
     }
 }

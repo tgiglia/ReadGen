@@ -22,5 +22,6 @@ namespace ReadGen
         public string model { get; set; }
         public string overviewimage { get; set; }
         public string plateimage { get; set; }
+        public string testing_notes { get; set; }
     }
 }

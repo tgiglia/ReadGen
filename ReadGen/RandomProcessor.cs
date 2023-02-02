@@ -40,7 +40,13 @@ namespace ReadGen
 
         private bool processRead(ConfigInfo ci, ReadStruct rs)
         {
-            Console.WriteLine("Working with: " + rs.camera_name);
+            Console.WriteLine("");
+            Console.WriteLine("Working with Plate:" + rs.plate);
+            Console.WriteLine("Working with Camera: " + rs.camera_name);
+            if (rs.testing_notes != null)
+            {
+                Console.WriteLine("Testing Notes: " + rs.testing_notes);
+            }
             string camera = null;
             //If we don't have a camera 
             if (rs.camera_name == null)
@@ -113,8 +119,18 @@ namespace ReadGen
             Console.WriteLine("XML:\n" + requestXml);
             //Send the REST request
             PutReadRequest prr = new PutReadRequest(ci.ec.username, ci.ec.password, ci.ec.readAgg);
-            HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
-            Console.WriteLine("RandomProcessor::processRead: status = " + status.ToString());
+            try
+            {
+                
+                HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
+                Console.WriteLine("RandomProcessor::processRead: status = " + status.ToString());
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            
             //Do we have to generate alarms? Check genalarms in Environment file
             //if genalarms 
             if (ci.ec.genalarms.Equals("true"))
@@ -129,7 +145,7 @@ namespace ReadGen
                     {
                         Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
                         Guid alarmG = Guid.NewGuid();
-                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld);
+                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld,ci);
                         Console.WriteLine(sAlarmXML);
                         prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
                     }

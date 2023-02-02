@@ -10,8 +10,12 @@ namespace ReadGen
 {
     public class ConfigInfo
     {
-        String appConfigPath;
-        String envrionmentConfigPath;
+        Random rnd;
+        public String appConfigPath { get; set; }
+        public String environmentConfigPath { get; set; }
+        public string emailAddress { get; set; }
+        public string emailFrom { get; set; }
+        public string emailTo { get; set; }
         public List<String> cameras;
         public List<String> alarmUsers;
         public List<PlateLookup> plateLookups;
@@ -22,8 +26,9 @@ namespace ReadGen
         public AlarmMgmtContainer amc { get; set; }
         public ConfigInfo(String acp, String ecp)
         {
+            rnd = new Random();
             appConfigPath = acp;
-            envrionmentConfigPath = ecp;
+            environmentConfigPath = ecp;
             ac = new ApplicationConfig();
             ac.ProcClassification = ApplicationConfig.procclass.unknown;
             ec = new EnvironmentConfig();
@@ -31,6 +36,9 @@ namespace ReadGen
             cameras = new List<String>();
             alarmUsers = new List<String>();
             plateLookups = new List<PlateLookup>();
+            emailAddress = "172.20.72.99";
+            emailFrom = "eoc4rd@leonardocompany-us.com";
+            emailTo = "tom.giglia@leonardocompany-us.com";
 
         }
 
@@ -65,8 +73,8 @@ namespace ReadGen
             }
             if(ac.alarmmgtfile != null)
             {
-                AlarmMgmtJSONParser amjp = new AlarmMgmtJSONParser();
-                amc = amjp.parseFile(ac.alarmmgtfile);
+                loadAlarmManagement();
+                
             }
             if(ac.plate_lookup != null)
             {
@@ -74,6 +82,84 @@ namespace ReadGen
                 {
                     Console.WriteLine("Load: ERROR could not load plate lookup file.");
                 }
+            }
+            if(ac.notifyfile != null)
+            {
+                if(!parseEmailAddresses())
+                {
+                    Console.WriteLine("Load: ERROR could not load notify file.");
+                }
+
+            }
+            return true;
+        }
+        
+        private void loadAlarmManagement()
+        {
+            AlarmMgmtJSONParser amjp = new AlarmMgmtJSONParser();
+            
+
+            amc = amjp.parseFile(ac.alarmmgtfile);
+            
+            
+        }
+        public AlarmMgmtStruct getRandomAlarmMgmt()
+        {
+            AlarmMgmtStruct ams = new AlarmMgmtStruct();
+            ams.status = 1;
+            ams.reason = 0;
+            ams.note = "[other]";
+            if (amc == null)
+            {
+                return ams;
+            }
+            if(amc.items == null)
+            {
+                return ams;
+            }
+            if(amc.items.Count == 0)
+            {
+                return ams;
+            }
+            if(amc.items.Count == 1)
+            {
+                return amc.items[0];
+            }
+            int iRnd = rnd.Next(amc.items.Count);
+
+
+            return amc.items[iRnd];
+        }
+        private bool parseEmailAddresses()
+        {
+            try
+            {
+                ac.emailRecipients = new List<String>();
+                XmlDocument additionalEmailsXml = new XmlDocument();
+                additionalEmailsXml.Load(ac.notifyfile);
+                XmlNode emailAddressesNode = additionalEmailsXml.SelectSingleNode("emailaddresses");
+                if (emailAddressesNode == null)
+                {
+                    
+                    return false;
+                }
+                XmlNodeList theAddresses = emailAddressesNode.SelectNodes("email");
+                if (theAddresses == null)
+                {
+                    return false;
+                }
+                foreach (XmlNode xn in theAddresses)
+                {
+                    String s = xn.InnerText;
+                    ac.emailRecipients.Add(s);
+                }
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("parseEmailAddresses:: ERROR\n" + e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false;
             }
             return true;
         }
@@ -178,7 +264,7 @@ namespace ReadGen
             try
             {
                 XmlDocument appXml = new XmlDocument();
-                appXml.Load(envrionmentConfigPath);
+                appXml.Load(environmentConfigPath);
                 XmlNode configs = appXml.SelectSingleNode("configuration");
                 if (configs == null)
                 {
@@ -382,7 +468,24 @@ namespace ReadGen
                 {
                     ac.plate_lookup = xnPlate_lookup.Value;
                 }
-                
+                XmlNode xnNotifyFile = findField(configs, "notifyfile");
+                if(xnNotifyFile == null)
+                {
+                    ac.notifyfile = null;
+                }
+                else
+                {
+                    ac.notifyfile = xnNotifyFile.Value;
+                }
+                XmlNode xnLogfile = findField(configs, "logfile");
+                if(xnLogfile == null)
+                {
+                    ac.logfile = null;
+                }
+                else
+                {
+                    ac.logfile = xnLogfile.Value;
+                }
 
             }
             catch (Exception e)

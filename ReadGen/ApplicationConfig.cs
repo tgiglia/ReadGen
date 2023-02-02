@@ -19,6 +19,9 @@ namespace ReadGen
         public String overview_image_path { get; set; }
         public String plate_image_path { get; set; }
         public String plate_lookup { get; set; }
+        public String notifyfile { get; set; }
+        public String logfile { get; set; }
+        public List<String>emailRecipients { get; set; }
         public procclass ProcClassification { get; set; }
         public override string ToString()
         {
@@ -31,7 +34,9 @@ namespace ReadGen
                 "\nalarmuserfile: " + alarmuserfile +
                 "\noverview_image_path: " + overview_image_path +
                 "\nplate_image_path: " + plate_image_path +
-                "\nplate_lookup: " + plate_lookup;
+                "\nplate_lookup: " + plate_lookup +
+                "\nnotifyfile: " + notifyfile +
+                "\nlogfile: " + logfile;
 
         }
         

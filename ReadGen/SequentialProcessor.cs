@@ -39,7 +39,16 @@ namespace ReadGen
 
         private bool processRead(ConfigInfo ci, ReadStruct rs)
         {
-            Console.WriteLine("Working with: " + rs.camera_name);
+            Logger.logIt(ci, "");
+            Logger.logIt(ci,"************************************");
+            Logger.logIt(ci,"Working with Plate:" + rs.plate);
+            Logger.logIt(ci,"Working with Camera: " + rs.camera_name);
+            if(rs.testing_notes != null)
+            {
+                Logger.logIt(ci,"Testing Notes: " + rs.testing_notes);
+            }
+            
+            
             string camera = null;
             //If we don't have a camera 
             if(rs.camera_name == null)
@@ -47,12 +56,14 @@ namespace ReadGen
                 
                 if(ci.cameras == null)
                 {
-                    Console.WriteLine("SequentialProcessor::processRead: ERROR. No cameras.");
+                    Logger.logIt(ci,"SequentialProcessor::processRead: ERROR. No cameras.");
+                    Logger.logIt(ci, "*******************************************");
                     return false;
                 }
                 if(ci.cameras.Count == 0)
                 {
-                    Console.WriteLine("SequentialProcessor::processRead: ERROR. No cameras.");
+                    Logger.logIt(ci,"SequentialProcessor::processRead: ERROR. No cameras.");
+                    Logger.logIt(ci, "*******************************************");
                     return false;
                 }
                 //Select a camera from the Camera file -- should be lib function
@@ -67,8 +78,9 @@ namespace ReadGen
             CGInfo cgi = sqh.getReaderFromCameraName(camera);
             if(cgi == null)
             {
-                Console.WriteLine("SequentialProcessor::processRead: ERROR. " +
+                Logger.logIt(ci,"SequentialProcessor::processRead: ERROR. " +
                     "Could not find reader for: " + camera);
+                Logger.logIt(ci, "*******************************************");
                 return false;
             }
             if(rs.longitude != 0)
@@ -79,18 +91,18 @@ namespace ReadGen
             {
                 cgi.lat = rs.latitude;
             }
-            Console.WriteLine("SequentialProcessor::processRead: reader: " + cgi.reader);
+            Logger.logIt(ci,"SequentialProcessor::processRead: reader: " + cgi.reader);
             //Perform the Image lookup -- should be lib function
             DeriveImages di = new DeriveImages();
             ImagesData id = di.getImages(ci, rs);
             if(id == null)
             {
-                Console.WriteLine("SequentialProcessor::processRead: Image Read FAILED!");
+                Logger.logIt(ci,"SequentialProcessor::processRead: Image Read FAILED!");
                 return false;
             }
             if(id.plateBytes == null || id.overviewBytes == null)
             {
-                Console.WriteLine("SequentialProcessor::processRead: Image Read FAILED!");
+                Logger.logIt(ci,"SequentialProcessor::processRead: Image Read FAILED!");
                 return false;
             }
            
@@ -114,16 +126,27 @@ namespace ReadGen
             ReadXmlMaker rxm = new ReadXmlMaker();
            
             String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs,id);
-            //Console.WriteLine("XML:\n" + requestXml);
+            
+            Logger.logIt(ci, requestXml);
             //Send the REST request
             PutReadRequest prr = new PutReadRequest(ci.ec.username,ci.ec.password,ci.ec.readAgg);
-            HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
-            Console.WriteLine("SequentialProcessor::processRead: status = " + status.ToString());
+            try
+            {
+                HttpStatusCode status = prr.PutResourceReadRequest(cgi.id, requestXml);
+                Console.WriteLine("SequentialProcessor::processRead: status = " + status.ToString());
+            }
+            catch(Exception e)
+            {
+                Logger.logIt(ci,e.Message);
+                Logger.logIt(ci, "****************************************");
+                return false;
+            }
             //Do we have to generate alarms? Check genalarms in Environment file
             //if genalarms 
+            
             if (ci.ec.genalarms.Equals("true"))
             {
-                Console.WriteLine("SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
+                Logger.logIt(ci,"SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");
                 //Check EOC_TRAN for list entries
                 // generate alarms if there are list entries
                 //ListDetail ld = sqh.getListEntries(rs.plate, rs.state, timeStamp);
@@ -132,10 +155,10 @@ namespace ReadGen
                 {
                     foreach(ListDetail ld in ldList)
                     {
-                        Console.WriteLine("**** WE Can generate alarms: " + ld.list_detail_id);
+                        Logger.logIt(ci,"**** WE Can generate alarms: " + ld.list_detail_id);
                         Guid alarmG = Guid.NewGuid();
-                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld);
-                        //Console.WriteLine(sAlarmXML);
+                        String sAlarmXML = rxm.buildAlarmXMLUS(requestXml, cgi, alarmG.ToString(), timeStamp, rs.plate, ld,ci);
+                        Logger.logIt(ci, sAlarmXML);                       
                         prr.PutResourceAlarmRequest(alarmG.ToString(), sAlarmXML);
                     }
                     

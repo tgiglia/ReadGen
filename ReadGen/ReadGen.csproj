@@ -54,11 +54,14 @@
     <Compile Include="CGInfo.cs" />
     <Compile Include="ConfigInfo.cs" />
     <Compile Include="DeriveImages.cs" />
+    <Compile Include="DomainEmail.cs" />
     <Compile Include="DoNothingProcessor.cs" />
+    <Compile Include="EmailNotification.cs" />
     <Compile Include="EnvironmentConfig.cs" />
     <Compile Include="EOCGuid.cs" />
     <Compile Include="ImagesData.cs" />
     <Compile Include="ListDetail.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="LookupProcessor.cs" />
     <Compile Include="PlateLookup.cs" />
     <Compile Include="ProcessingReturn.cs" />

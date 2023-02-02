@@ -1,7 +1,6 @@
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\ReadGen.exe.config
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\ReadGen.exe
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\ReadGen.pdb
-C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.csprojAssemblyReference.cache
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.csproj.CoreCompileInputs.cache
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.exe
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.pdb
@@ -15,3 +14,4 @@ C:\Users\tgigl\source\repos\ReadGen\ReadGen\ReadGen\obj\Debug\ReadGen.pdb
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\Newtonsoft.Json.dll
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\bin\Debug\Newtonsoft.Json.xml
 C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.csproj.CopyComplete
+C:\Users\tom.giglia\source\repos\ReadGen\ReadGen\obj\Debug\ReadGen.csprojAssemblyReference.cache

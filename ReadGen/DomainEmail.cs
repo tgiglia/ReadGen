@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ReadGen
 {
-    public class AlarmMgmtStruct
+    class DomainEmail
     {
-        public int status { get; set; }
-        public int reason { get; set; }
-        public string note { get; set; }
+        public string domain { get; set; }
+        public string email { get; set; }
     }
 }

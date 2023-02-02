@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<configuration>
+		<proctype value="sequential" />
+		<numtosend value ="1"/>
+		<msdelay value ="3000"/>
+		<readfile value="C:\Users\tom.giglia\Documents\ReadGen\reads\readgen-issues.json" />
+		<camfile value="C:\Users\tom.giglia\Documents\ReadGen\Environment\cameras.txt" />
+		<alarmmgtfile value="C:\Users\tom.giglia\Documents\ReadGen\alarmmgt\alarmmanagmentShort.json" />
+		<alarmuserfile value="C:\Users\tom.giglia\Documents\ReadGen\Environment\alarm-users.txt" />
+		<overview_image_path value="\\fileshare.elsagrd.com\FileShare\RnD Internal\Sharepoint\Testing\Test Artifacts\Test Data\Images\US\techserver-01\overview-images" />
+		<plate_image_path value="\\fileshare.elsagrd.com\FileShare\RnD Internal\Sharepoint\Testing\Test Artifacts\Test Data\Images\US\techserver-01\plate-images" />
+		<plate_lookup value="C:\Users\tom.giglia\Documents\ReadGen\Examples\Test Case 1234\plate-lookup.csv" />
+		<notifyfile value="C:\Users\tom.giglia\Documents\ReadGen\Environment\emailaddresses.xml" />
+</configuration>
