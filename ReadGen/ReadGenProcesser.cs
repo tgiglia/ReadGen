@@ -126,5 +126,23 @@ namespace ReadGen
 
             return ci.cameras[idx];
         }
+        protected int getMSDelay(DateTime start, DateTime end)
+        {
+            if (start > end)
+            {
+                //Console.WriteLine("getMSDelay: START is greater than END!");
+                DateTime tmp = end;
+                end = start;
+                start = tmp;
+            }
+            int iDelay = 0;
+            int hourDelay = (end.Hour - start.Hour) * 3600000;
+            int minuteDelay = (end.Minute - start.Minute) * 60000;
+            int secondDelay = (end.Second - start.Second) * 1000;
+            int millisecondDelay = end.Millisecond - start.Millisecond;
+            iDelay = hourDelay + minuteDelay + secondDelay + millisecondDelay;
+            return iDelay;
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Threading;
 
 namespace ReadGen
 {
@@ -28,10 +29,18 @@ namespace ReadGen
                 int idx = rndGlobal.Next(0, ci.rc.Reads.Count);
                 //process the read
                 //Check for the Camera here - if its null then get one from the camfile ci.cameras
-
+                DateTime starttime = DateTime.Now;
                 if (!processRead(ci, ci.rc.Reads[idx]))
                 {
                     pr.status++;
+                }
+                DateTime endtime = DateTime.Now;
+                int runTime = getMSDelay(starttime, endtime);
+                if (runTime < ci.ac.msdelay)
+                {
+                    int msToWait = ci.ac.msdelay - runTime;
+                    Console.WriteLine("Sleeping " + msToWait + " milliseconds...");
+                    Thread.Sleep(msToWait);
                 }
 
             }

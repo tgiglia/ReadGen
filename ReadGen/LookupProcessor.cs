@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using System.Threading;
 
 namespace ReadGen
 {
@@ -97,6 +98,7 @@ namespace ReadGen
                 ReadXmlMaker rxm = new ReadXmlMaker();
                 String requestXml = rxm.deriveXmlUS(cgi, rs.plate, rs.read_date, id.plateBytes, id.overviewBytes, eocGuid, ci, rs,id);
                 Console.WriteLine("XML:\n" + requestXml);
+                DateTime starttime = DateTime.Now;
                 PutReadRequest prr = new PutReadRequest(ci.ec.username, ci.ec.password, ci.ec.readAgg);
                 try
                 {
@@ -133,7 +135,14 @@ namespace ReadGen
                     }
                 }
 
-
+                DateTime endtime = DateTime.Now;
+                int runTime = getMSDelay(starttime, endtime);
+                if (runTime < ci.ac.msdelay)
+                {
+                    int msToWait = ci.ac.msdelay - runTime;
+                    Console.WriteLine("Sleeping " + msToWait + " milliseconds...");
+                    Thread.Sleep(msToWait);
+                }
                 iIdx++;
             }
             

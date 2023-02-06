@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace ReadGen
 {
@@ -12,6 +13,7 @@ namespace ReadGen
         public override ProcessingReturn executeProcess(ConfigInfo ci)
         {
            
+
             ProcessingReturn pr = new ProcessingReturn();
             pr.status = 0;
             pr.description = "Success";
@@ -21,9 +23,18 @@ namespace ReadGen
             int iNumReads = ci.rc.Reads.Count;
             foreach(ReadStruct rs in ci.rc.Reads)
             {
-               if(!processRead(ci,rs))
+                DateTime starttime = DateTime.Now;
+                if(!processRead(ci,rs))
                 {
                     pr.status++;
+                }
+                DateTime endtime = DateTime.Now;
+                int runTime = getMSDelay(starttime, endtime);
+                if(runTime < ci.ac.msdelay)
+                {
+                    int msToWait = ci.ac.msdelay - runTime;
+                    Console.WriteLine("Sleeping " + msToWait + " milliseconds...");
+                    Thread.Sleep(msToWait);
                 }
             }
 
