@@ -43,6 +43,8 @@ namespace ReadGen
             }
             /*Console.WriteLine("Press any key to end.");
             Console.ReadKey(); */
+
+
         }
 
         static void sendFailureNotifications(ConfigInfo ci,ProcessingReturn pr)

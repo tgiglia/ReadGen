@@ -14,6 +14,7 @@ namespace ReadGen
             if(cd.ac.logfile == null)
             {
                 Console.WriteLine(s);
+                return;
             }
             DateTime localTime = DateTime.Now;
             if (!File.Exists(cd.ac.logfile))
