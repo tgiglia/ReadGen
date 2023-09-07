@@ -114,10 +114,23 @@ namespace ReadGen
                 {
                     ld.begin_date = reader.GetDateTimeOffset(7);
                 }
+                if(!reader.IsDBNull(8))
+                {
+                    ld.locale_id = reader.GetString(8);
+                }
+                else
+                {
+                    ld.locale_id = null;
+                }
+                if(!reader.IsDBNull(9))
+                {
+                    ld.listDomainId = reader.GetInt32(9);
+                }
                 bFound = true;
                 ldList.Add(ld);
             }
-
+            reader.Close();
+           
             closeSqlConnection();
             if (!bFound)
             {
@@ -127,9 +140,13 @@ namespace ReadGen
         }
         private string deriveListDetailStr(string plate, string state, string readDate)
         {
-            string s = "select list_detail_id,list_id,list_type_id,alarm_class_id,create_date,end_date,notes,begin_date from list_detail where plate='" + plate + "' and begin_date <'" + readDate + 
+            string s = "select list_detail_id,list_detail.list_id,list_detail.list_type_id,alarm_class_id,list_detail.create_date," +
+                "list_detail.end_date,list_detail.notes,begin_date,locale_id,list.domain_id " +
+                "from list_detail join list on list.list_id = list_detail.list_id " + 
+                "where plate='" + plate + "' and begin_date <'" + readDate + 
                 "' and ( end_date >= '" + readDate +
-                "' or end_date is null) and list_type_id = (select list_type_id from list_type_lookup where description = 'list_type_lookup_HotList')";
+                "' or end_date is null) and list_detail.list_type_id = (select list_type_id from list_type_lookup where " + 
+                "description = 'list_type_lookup_HotList')";
 
             if (state == null)
             {

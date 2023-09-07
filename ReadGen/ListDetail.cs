@@ -16,5 +16,7 @@ namespace ReadGen
         public DateTimeOffset begin_date { get; set; }
         public DateTimeOffset end_date { get; set; }
         public string notes { get; set; }
+        public string locale_id { get; set; }
+        public int listDomainId { get; set; }
     }
 }

@@ -63,6 +63,7 @@
     <Compile Include="ListDetail.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LookupProcessor.cs" />
+    <Compile Include="LookupProcessorUK.cs" />
     <Compile Include="PlateLookup.cs" />
     <Compile Include="ProcessingReturn.cs" />
     <Compile Include="Program.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="PutReadRequest.cs" />
     <Compile Include="RandomFileData.cs" />
     <Compile Include="RandomProcessor.cs" />
+    <Compile Include="RandomProcessor_UK.cs" />
     <Compile Include="ReadContainer.cs" />
     <Compile Include="ReadFileJSONParser.cs" />
     <Compile Include="ReadGenProcesser.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="ReadXmlMaker.cs" />
     <Compile Include="RESTBase.cs" />
     <Compile Include="SequentialProcessor.cs" />
+    <Compile Include="SequentialProcessor_UK.cs" />
     <Compile Include="SQLQueryHelper.cs" />
   </ItemGroup>
   <ItemGroup>

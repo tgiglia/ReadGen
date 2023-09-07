@@ -102,6 +102,18 @@ namespace ReadGen
             {
                 return new LookupProcessor();
             }
+            if (ci.ac.proctype.Equals("sequentialUK"))
+            {
+                return new SequentialProcessor_UK();
+            }
+            if (ci.ac.proctype.Equals("randomUK"))
+            {
+                return new RandomProcessor_UK();
+            }
+            if (ci.ac.proctype.Equals("lookupUK"))
+            {
+                return new LookupProcessorUK();
+            }
             return new DoNothingProcessor();
         }
     }
