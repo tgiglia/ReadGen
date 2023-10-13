@@ -122,11 +122,24 @@ namespace ReadGen
                 xw.WriteString(rs.speed.ToString());
                 xw.WriteEndElement();
             }
+            
+
             //Add the image data
-            xw.WriteStartElement("imagedata");
-            string s = Convert.ToBase64String(imageBytes, 0, imageBytes.Length);
-            xw.WriteString(s);
-            xw.WriteEndElement();
+            if(rs.read_method == null)
+            {
+                xw.WriteStartElement("imagedata");
+                string s = Convert.ToBase64String(imageBytes, 0, imageBytes.Length);
+                xw.WriteString(s);
+                xw.WriteEndElement();
+            }
+            else if(rs.read_method.Equals("LPR"))
+            {
+                xw.WriteStartElement("imagedata");
+                string s = Convert.ToBase64String(imageBytes, 0, imageBytes.Length);
+                xw.WriteString(s);
+                xw.WriteEndElement();
+            }
+            
 
             xw.WriteStartElement("class");
             xw.WriteString("Invariant");
@@ -180,24 +193,26 @@ namespace ReadGen
             xw.WriteString(timeStamp);
             //End timestamp element
             xw.WriteEndElement();
-            if(rs.read_method != null )
+            if (rs.read_method == null)
             {
-                if(rs.read_method.Length > 2)
-                {
-                    xw.WriteStartElement("method");
-                    xw.WriteString(rs.read_method);
-                    xw.WriteEndElement();
-                }
+                //create imagedata element
+                xw.WriteStartElement("imagedata");
+                //write imagedata element
+                String s = Convert.ToBase64String(oimageBytes, 0, oimageBytes.Length);
+                xw.WriteString(s);
+                //end imagedata element
+                xw.WriteEndElement();
             }
-
-
-            //create imagedata element
-            xw.WriteStartElement("imagedata");
-            //write imagedata element
-            s = Convert.ToBase64String(oimageBytes, 0, oimageBytes.Length);
-            xw.WriteString(s);
-            //end imagedata element
-            xw.WriteEndElement();
+            else if (rs.read_method.Equals("LPR"))
+            {
+                //create imagedata element
+                xw.WriteStartElement("imagedata");
+                //write imagedata element
+                String s = Convert.ToBase64String(oimageBytes, 0, oimageBytes.Length);
+                xw.WriteString(s);
+                //end imagedata element
+                xw.WriteEndElement();
+            }
 
             //end snapshot element
             xw.WriteEndElement();
@@ -225,6 +240,20 @@ namespace ReadGen
             xw.WriteStartElement("facing");
             xw.WriteString("Front");
             xw.WriteEndElement();
+            if (rs.read_method != null)
+            {
+                if (rs.read_method.Length > 2)
+                {
+                    xw.WriteStartElement("method");
+                    xw.WriteString(rs.read_method);
+                    xw.WriteEndElement();
+                }
+
+
+            }
+
+
+
             //Plate location
             xw.WriteStartElement("platelocation");
             xw.WriteAttributeString("height", id.height);
@@ -477,7 +506,7 @@ namespace ReadGen
             if(ld.notes != null)
             {
                 xw.WriteStartElement("Notes");
-                xw.WriteString(ld.notes);
+                xw.WriteString(ams.note);
                 xw.WriteEndElement();//END Notes
             }
 

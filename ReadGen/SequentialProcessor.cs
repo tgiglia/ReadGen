@@ -136,8 +136,8 @@ namespace ReadGen
             cgi.id = readId.ToString();
             ReadXmlMaker rxm = new ReadXmlMaker();
            
-            //String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs,id);
-            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, eocGuid, ci, rs, id);
+            String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, id.plateBytes, id.overviewBytes, eocGuid, ci,rs,id);
+            //String requestXml = rxm.deriveXmlUS(cgi, rs.plate, timeStamp, eocGuid, ci, rs, id);
 
             Logger.logIt(ci, requestXml);
             //Send the REST request
