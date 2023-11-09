@@ -154,8 +154,7 @@ namespace ReadGen
                 return false;
             }
             //Do we have to generate alarms? Check genalarms in Environment file
-            //if genalarms 
-            
+            //if genalarms            
             if (ci.ec.genalarms.Equals("true"))
             {
                 Logger.logIt(ci,"SequentialProcessor::processRead: genalarms is set to true. Checking for list entries....");

@@ -251,9 +251,6 @@ namespace ReadGen
 
 
             }
-
-
-
             //Plate location
             xw.WriteStartElement("platelocation");
             xw.WriteAttributeString("height", id.height);
@@ -444,14 +441,29 @@ namespace ReadGen
                 xw.WriteStartElement("RejectedReason2");
                 xw.WriteString(ams.reason.ToString());
                 xw.WriteEndElement();//RejectedReason2
-                string s = deriveResultText(ci, ams);
-                if(s != null)
+                string userName = ci.getRandomAlarmUser();
+                if (userName != null)
                 {
-                    xw.WriteStartElement("ResultText");
-                    xw.WriteString(ams.note);
-                    xw.WriteEndElement();//ResultText
+                    SQLQueryHelper sqh = new SQLQueryHelper(ci);
+                    string userId = sqh.getUserIDFromUserName(userName);
+                    if(userId != null)
+                    {
+                        xw.WriteStartElement("UserId");
+                        xw.WriteString(userId);
+                        xw.WriteEndElement();//UserId
+                        AlarmUserStruct aus = sqh.getAlarmUserInfoFromID(userId);
+                        string resultText = deriveResultText(aus);
+                        
+                        if (resultText != null)
+                        {
+                            xw.WriteStartElement("ResultText");
+                            xw.WriteString(resultText);
+                            xw.WriteEndElement();//ResultText
+                        }
+                    }
+
+                    
                 }
-                
             }
 
             xw.WriteStartElement("domain");
@@ -506,7 +518,7 @@ namespace ReadGen
             if(ld.notes != null)
             {
                 xw.WriteStartElement("Notes");
-                xw.WriteString(ams.note);
+                xw.WriteString(ld.notes);
                 xw.WriteEndElement();//END Notes
             }
 
@@ -518,6 +530,26 @@ namespace ReadGen
             return sb.ToString();           
         }
 
+        private string deriveResultText(AlarmUserStruct aus)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("***\n");
+            if(aus.email != null)
+            {
+                sb.Append("[eoc-url=mailto:USEREMAIL]");
+                sb.Append(aus.email);
+                sb.Append("[/eoc-url]");
+                sb.Append(aus.Domain + "\n");
+            }
+            else
+            {
+                sb.Append(aus.Username + " ");
+                sb.Append(aus.Domain + "\n");
+            }
+            sb.Append(DateTime.Now.ToString());
+
+            return sb.ToString();
+        }
         public String buildAlarmXMLUK(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, String hotListId,
     String yesterdayStr)
         {

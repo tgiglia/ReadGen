@@ -50,6 +50,7 @@
     <Compile Include="AlarmMgmtContainer.cs" />
     <Compile Include="AlarmMgmtJSONParser.cs" />
     <Compile Include="AlarmMgmtStruct.cs" />
+    <Compile Include="AlarmUserStruct.cs" />
     <Compile Include="ApplicationConfig.cs" />
     <Compile Include="CGInfo.cs" />
     <Compile Include="ConfigInfo.cs" />

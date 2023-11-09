@@ -160,6 +160,62 @@ namespace ReadGen
             string complete = s + end;
             return complete;
         }
+        public string getUserIDFromUserName(string username)
+        {
+            string userId=null;
+            if (!openSqlConnection())
+            {
+                Console.WriteLine("SQLQueryHelper::getUserIDFromUserName: " +
+                    "Could not open connection to: " + cd.ec.datasource);
+                return null;
+            }
+
+            String sql = "select UserID from aspnet_Users where UserName = '" + username + "'";
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                userId = reader.GetGuid(0).ToString();
+            }
+
+            reader.Close();
+            closeSqlConnection();
+            return userId;
+        }
+
+
+        public AlarmUserStruct getAlarmUserInfoFromID(string userId)
+        {
+            AlarmUserStruct aus = new AlarmUserStruct();
+            string sql = deriveDomainAndEmailFromUserId(userId);
+
+            if (!openSqlConnection())
+            {
+                Console.WriteLine("SQLQueryHelper::getAlarmUserInfoFromID: " +
+                    "Could not open connection to: " + cd.ec.datasource);
+                return aus;
+            }
+            SqlCommand command = new SqlCommand(sql, conn);
+            reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                aus.ID = userId;
+                aus.Username = reader.GetString(0);
+                if (!reader.IsDBNull(2))
+                {
+                    aus.email = reader.GetString(2);
+                }
+                else
+                {
+                    aus.email = null;
+                }
+                aus.Domain = reader.GetString(3);
+            }
+            reader.Close();
+            closeSqlConnection();
+            return aus;
+        }
+
         public CGInfo getReaderFromCameraName(string cameraName)
         {
             
@@ -240,6 +296,26 @@ namespace ReadGen
             reader.Close();
             return cgi;
         }
+        private string deriveDomainAndEmailFromUserId(string userId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select\n");
+            sb.Append("u.UserName as Username,\n");
+            sb.Append("lower(u.UserId) as ID,\n");
+            sb.Append("m.Email,\n");
+            sb.Append("dl.description as Domain\n");
+            sb.Append("from aspnet_Users u join\n");
+            sb.Append("(select UserId, DomainId, UserDesc, FirstName, LastName, Occupation, Organization, ORI, SMS from\n");
+            sb.Append("(select UserId , propertyname, propertyvaluestring from aspnetx_eocprofile) as a pivot(max(propertyvaluestring) for propertyname in (DomainId, UserDesc, FirstName, LastName, Occupation, Organization, ORI, SMS)) as pvt) as p\n");
+            sb.Append("on u.UserId = p.UserId\n");
+            sb.Append("LEFT OUTER JOIN aspnet_Membership AS m ON u.UserId = m.UserId\n");
+            sb.Append("INNER JOIN domain_lookup AS dl ON domainId = dl.domain_id\n");
+            sb.Append("where u.UserId = '" + userId + "'");
+
+            return sb.ToString();
+        }
+            
+            
         private string deriveDomainFromUser(string user)
         {
             StringBuilder sb = new StringBuilder();

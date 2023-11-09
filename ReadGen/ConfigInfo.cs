@@ -103,6 +103,11 @@ namespace ReadGen
             
             
         }
+        public string getRandomAlarmUser()
+        {
+            int iRnd = rnd.Next(alarmUsers.Count);
+            return alarmUsers[iRnd];
+        }
         public AlarmMgmtStruct getRandomAlarmMgmt()
         {
             AlarmMgmtStruct ams = new AlarmMgmtStruct();
