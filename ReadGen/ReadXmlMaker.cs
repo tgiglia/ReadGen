@@ -415,6 +415,8 @@ namespace ReadGen
             ListDetail ld,ConfigInfo ci)
         {
             StringBuilder sb = new StringBuilder();
+            string tsWUTC = addUTCToTimeStamp(timeStamp);
+            
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {
                 Indent = true,
@@ -452,7 +454,7 @@ namespace ReadGen
                         xw.WriteString(userId);
                         xw.WriteEndElement();//UserId
                         AlarmUserStruct aus = sqh.getAlarmUserInfoFromID(userId);
-                        string resultText = deriveResultText(aus);
+                        string resultText = deriveResultText(aus,ams, tsWUTC);
                         
                         if (resultText != null)
                         {
@@ -500,19 +502,22 @@ namespace ReadGen
             xw.WriteEndElement();//AlarmClassId2
 
             xw.WriteStartElement("CreateDate");
-            xw.WriteString(ld.created_date.ToString()) ;
+            string tmpCD = ld.created_date.ToString("yyy-MM-ddTHH:mm:ss.fffffffzzz");
+            xw.WriteString(tmpCD) ;
             xw.WriteEndElement();//END Create Date
 
             if(ld.begin_date != null)
             {
                 xw.WriteStartElement("BeginDate");
-                xw.WriteString(ld.begin_date.ToString());
+                string tmp = ld.begin_date.ToString("yyy-MM-ddTHH:mm:ss.fffffffzzz");
+                xw.WriteString(tmp);
                 xw.WriteEndElement();//END BeginDate
             }
             if(ld.end_date != null)
             {
                 xw.WriteStartElement("EndDate");
-                xw.WriteString(ld.end_date.ToString());
+                string tmp = ld.end_date.ToString("yyy-MM-ddTHH:mm:ss.fffffffzzz");
+                xw.WriteString(tmp);
                 xw.WriteEndElement();//END EndDate
             }
             if(ld.notes != null)
@@ -530,26 +535,62 @@ namespace ReadGen
             return sb.ToString();           
         }
 
-        private string deriveResultText(AlarmUserStruct aus)
+        private string addUTCToTimeStamp(string s)
+        {
+
+            StringBuilder sb = new StringBuilder();
+            DateTime parsedDate = DateTime.Parse(s);
+            sb.Append(parsedDate.ToString());
+            sb.Append(" UTC");
+            //tmp.ToCharArray
+            //Now you have something like this: 2023-11-10 09:22:52-05:00
+            char[] theArray = s.ToCharArray();
+            int numHashes = 0;
+            foreach(char c in theArray)
+            {
+                if(c == '-')
+                {
+                    numHashes++;                    
+                }
+                if (numHashes >= 3)
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
+        private string deriveResultText(AlarmUserStruct aus, AlarmMgmtStruct ams,string timestamp)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("***\n");
             if(aus.email != null)
             {
-                sb.Append("[eoc-url=mailto:USEREMAIL]");
-                sb.Append(aus.email);
-                sb.Append("[/eoc-url]");
-                sb.Append(aus.Domain + "\n");
+                if(aus.email.Length > 4)
+                {
+                    sb.Append("[eoc-url=mailto:" + aus.email + "]" + aus.Username);
+                    sb.Append("[/eoc-url] ");
+                    sb.Append(aus.Domain + "\n");
+                }
+                else
+                {
+                    sb.Append(aus.Username + " ");
+                    sb.Append(aus.Domain + "\n");
+                }
+                
             }
             else
             {
                 sb.Append(aus.Username + " ");
                 sb.Append(aus.Domain + "\n");
             }
-            sb.Append(DateTime.Now.ToString());
+            sb.Append(timestamp);
+            sb.Append("\n\n");
+            sb.Append(ams.note + "\nAlarm managed by ReadGen");
 
             return sb.ToString();
         }
+
+        
         public String buildAlarmXMLUK(String readXML, CGInfo cgi, String alarmId, String timeStamp, String plate, String hotListId,
     String yesterdayStr)
         {

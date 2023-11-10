@@ -122,13 +122,16 @@ namespace ReadGen
             //Create the XML
             EOCGuid eocGuid = new EOCGuid();
             string timeStamp = null;
+            
             if(rs.read_date != null)
             {
                 timeStamp = genTimestamp(rs.read_date);
+                
             }
             else
             {
                 timeStamp = genTimestamp();
+                
             }
            
             eocGuid.createGuidUS(timeStamp, rs.plate, camera);

@@ -28,7 +28,7 @@ namespace ReadGen
             DateTime localTime = DateTime.Now;
 
             DateTimeOffset localTimeAndOffset = new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
-
+           
             s = noMilliseconds(localTimeAndOffset);
             return s;
         }
@@ -49,6 +49,25 @@ namespace ReadGen
             }
             return deriveFromAbsoluteTimeStamp(s);
             
+        }
+        public string genTimestampWUTC(string s)
+        {
+            DateTime localTime = DateTime.Now;
+
+
+            if (s.Equals("TODAY NOW"))
+            {
+                DateTimeOffset localTimeAndOffset = new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
+                return noMilliseconds(localTimeAndOffset);
+            }
+            if (s.Contains("TODAY"))
+            {
+                return deriveTodayWTimeStamp(s);
+            }
+            string absoluteTS = deriveFromAbsoluteTimeStamp(s);
+            absoluteTS.Replace('T', ' ');
+            //absoluteTS.Insert
+            return absoluteTS;
         }
         private string deriveFromAbsoluteTimeStamp(string s)
         {
